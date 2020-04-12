@@ -6,10 +6,11 @@ import Skeleton from '@material-ui/lab/Skeleton';
 import MuiAlert, { AlertProps } from '@material-ui/lab/Alert';
 import Message from "../../components/Message";
 import { IMessage } from "../../models/message";
+import { Box } from "@material-ui/core";
 
 const GET_ALL_MESSAGES = gql`
   query {
-    findMessages {
+    findAllMessages {
       id
       content,
       user {
@@ -28,20 +29,23 @@ export default function Board() {
   const { loading, error, data } = useQuery(GET_ALL_MESSAGES);
 
   const messages = useMemo<IMessage[]>(() => {
-    return data?.findMessages;
+    return data?.findAllMessages;
   }, [data]);
 
-  return (
-    <>
-      {loading && (
-        <Skeleton variant="rect" width={210} height={118} />
-      )}
-      {messages?.map((message, index) => (
-        <Message key={index} message={message} />
-      ))}
-      {error && (
-        <Alert severity="error">This is an error message!</Alert>
-      )}
-    </>
+  return ( 
+    <Box 
+      display="flex" 
+      alignItems="center" 
+      flexDirection="column">
+        {loading && (
+          <Skeleton variant="rect" width={210} height={118} />
+        )}
+        {messages?.map((message, index) => (
+          <Message key={index} message={message} />
+        ))}
+        {error && (
+          <Alert severity="error">{JSON.stringify(error)}</Alert>
+        )}
+    </Box>
   );
 }

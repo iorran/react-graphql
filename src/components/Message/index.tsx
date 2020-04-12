@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -24,26 +24,36 @@ type Props = {
 }
 
 function Message({ message }: Props) {
-  const classes = useStyles();
+  const classes = useStyles(); 
+  const [image, setImage] = useState("");
 
-  const email = useMemo(() => message.user.email, [message]);
-  const content = useMemo(() => message.content, [message]);
+  const getImage = useCallback(async() => {
+    return fetch('https://picsum.photos/200')
+    .then(data => {
+      console.log(data)
+      setImage(data?.url)
+    });
+  }, []);
+
+  useEffect(() => {
+    getImage();
+  }, [getImage]);
 
   return (
     <Card className={classes.root}>
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image="/static/images/cards/contemplative-reptile.jpg"
+          image={image}
           title="Contemplative Reptile"
         />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            {content}
+        <CardContent> 
+          <Typography variant="h5" component="h2">
+            {message.content}
           </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            {email}
-          </Typography>
+          <Typography gutterBottom variant="body2" color="textSecondary" component="p">
+            {message.user.email}
+          </Typography> 
         </CardContent>
       </CardActionArea>
       <CardActions>
