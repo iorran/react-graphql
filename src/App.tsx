@@ -1,25 +1,48 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useMemo } from 'react';
+
+import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+
+import { ApolloProvider } from '@apollo/react-hooks';
+import api from './services/api';
+
+import history from './services/history'
+import { Router } from 'react-router-dom';
+import Routes from './routes';
+
+import Container from '@material-ui/core/Container';
+import deepPurple from '@material-ui/core/colors/deepPurple';
+import grey from '@material-ui/core/colors/grey';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+
+  const theme = useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: prefersDarkMode ? 'dark' : 'light',
+          primary: {
+            main: deepPurple[500]
+          },
+          secondary: {
+            main: grey[500]
+          }
+        },
+      }),
+    [prefersDarkMode],
+  );
+
+  return ( 
+    <ApolloProvider client={api}> 
+      <ThemeProvider theme={theme}> 
+        <Router history={history}> 
+          <Container maxWidth="sm">
+            <Routes />
+          </Container>
+        </Router>
+      </ThemeProvider>
+    </ApolloProvider>
   );
 }
 
